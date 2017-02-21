@@ -1,6 +1,6 @@
 from keras.layers.core import Dense, Activation, Flatten, Dropout
 from keras.layers.convolutional import Convolution2D
-from keras.layers import Cropping2D, Lambda
+from keras.layers import Cropping2D, Lambda, MaxPooling2D
 from keras.models import Sequential, Model
 import matplotlib.pyplot as plt
 from keras.preprocessing.image import ImageDataGenerator
@@ -24,7 +24,8 @@ gen_test = ImageDataGenerator()
 # model
 model = Sequential()
 # input layer w/ cropping
-model.add(Cropping2D(cropping=((30,10), (0,0)), input_shape=(160,320,3)))
+model.add(Cropping2D(cropping=((20,10), (0,0)), input_shape=(160,320,3)))
+model.add(MaxPooling2D(pool_size=(5,5)))
 # normalize
 model.add(Lambda(lambda x: (x / 255.0) - 0.5))
 # 5x5 conv
@@ -33,12 +34,14 @@ model.add(Activation('relu'))
 # 5x5 conv
 model.add(Convolution2D(24, 5, 5, border_mode='valid'))
 model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
 # 5x5 conv
 model.add(Convolution2D(48, 5, 5, border_mode='valid'))
 model.add(Activation('relu'))
 # 3x3 conv
 model.add(Convolution2D(64, 3, 3, border_mode='valid'))
 model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
 # 3x3 conv
 model.add(Convolution2D(64, 3, 3, border_mode='valid'))
 model.add(Activation('relu'))
@@ -47,11 +50,11 @@ model.add(Flatten())
 # fcn1
 model.add(Dense(100))
 model.add(Activation('relu'))
-model.add(Dropout(0.5))
+model.add(Dropout(0.25))
 # fcn2
 model.add(Dense(50))
 model.add(Activation('relu'))
-model.add(Dropout(0.5))
+model.add(Dropout(0.25))
 # fcn3
 model.add(Dense(10))
 model.add(Activation('relu'))
@@ -60,14 +63,14 @@ model.add(Dense(1))
 
 # compile
 model.compile('adam', 'mse')
-checkpointer = ModelCheckpoint("./model.h5", verbose=1, save_best_only=True)
+check = ModelCheckpoint("./model.h5", verbose=1, save_best_only=True)
 #history = model.fit(X, y, batch_size=128, nb_epoch=2, validation_split=0.2)
 history = model.fit_generator(gen_train.flow(X_train, y_train, batch_size=64),
                 samples_per_epoch=len(X_train),
-                nb_epoch=2,
+                nb_epoch=5,
                 validation_data=gen_test.flow(X_test, y_test, batch_size=64),
                 nb_val_samples=len(X_train),
-                callbacks=[checkpointer],
+                callbacks=[check],
                 verbose=2
                 )
 
