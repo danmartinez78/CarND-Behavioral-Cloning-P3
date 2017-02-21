@@ -21,31 +21,26 @@ X_train, X_test, y_train, y_test = train_test_split(data['features'], data['labe
 gen_train = ImageDataGenerator()
 gen_test = ImageDataGenerator()
 
-cv2.imshow("test", X_train[99])
-cv2.waitKey(2)
-print(y_train[99])
-
 # model
 model = Sequential()
 # input layer w/ cropping
-model.add(Cropping2D(cropping=((40,20), (0,0)), input_shape=(160,320,3)))
+model.add(Cropping2D(cropping=((30,10), (0,0)), input_shape=(160,320,3)))
 # normalize
 model.add(Lambda(lambda x: (x / 255.0) - 0.5))
 # 5x5 conv
 model.add(Convolution2D(3, 5, 5, border_mode='valid'))
 model.add(Activation('relu'))
 # 5x5 conv
-model.add(Convolution2D(3, 5, 5, border_mode='valid'))
+model.add(Convolution2D(24, 5, 5, border_mode='valid'))
 model.add(Activation('relu'))
 # 5x5 conv
-model.add(Convolution2D(6, 5, 5, border_mode='valid'))
+model.add(Convolution2D(48, 5, 5, border_mode='valid'))
 model.add(Activation('relu'))
 # 3x3 conv
-model.add(Convolution2D(8, 3, 3, border_mode='valid'))
+model.add(Convolution2D(64, 3, 3, border_mode='valid'))
 model.add(Activation('relu'))
-model.add(Dropout(0.6))
 # 3x3 conv
-model.add(Convolution2D(12, 3, 3, border_mode='valid'))
+model.add(Convolution2D(64, 3, 3, border_mode='valid'))
 model.add(Activation('relu'))
 # flatten
 model.add(Flatten())
@@ -65,15 +60,15 @@ model.add(Dense(1))
 
 # compile
 model.compile('adam', 'mse')
-checkpointer = ModelCheckpoint("./model.hdf5", verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint("./model.h5", verbose=1, save_best_only=True)
 #history = model.fit(X, y, batch_size=128, nb_epoch=2, validation_split=0.2)
-history = model.fit_generator(gen_train.flow(X_train, y_train, batch_size=32),
+history = model.fit_generator(gen_train.flow(X_train, y_train, batch_size=64),
                 samples_per_epoch=len(X_train),
-                nb_epoch=1,
-                validation_data=gen_test.flow(X_test, y_test, batch_size=32),
+                nb_epoch=2,
+                validation_data=gen_test.flow(X_test, y_test, batch_size=64),
                 nb_val_samples=len(X_train),
                 callbacks=[checkpointer],
-                verbose = 1
+                verbose=2
                 )
 
 ### print the keys contained in the history object
@@ -87,3 +82,5 @@ plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
 plt.show()
+
+print("DONE!")
