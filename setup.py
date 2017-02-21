@@ -16,7 +16,7 @@ with open(csv_file, 'r') as f:
         # read in images from center camera
         path = "./data/"  # fill in the path to your training IMG directory
         img_center = np.asarray(Image.open(path + row[0]))
-        img_flipped =  np.fliplr(img_center)
+        img_flipped = np.fliplr(img_center)
 
         # add images and angles to data set
         images = [img_center, img_flipped]
