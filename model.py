@@ -7,6 +7,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ModelCheckpoint
 import pickle
 from sklearn.model_selection import train_test_split
+#from keras.utils.visualize_util import plot
 
 # import data
 with open('./data/data.p', mode='rb') as f:
@@ -66,6 +67,9 @@ model.add(Dense(1))
 
 # compile
 model.compile('adam', 'mse')
+
+#plot(model, to_file='model.png', show_layer_names=True, show_shapes=True)
+
 check = ModelCheckpoint("./model.h5", verbose=1, save_best_only=True)
 history = model.fit_generator(datagen.flow(X_train, y_train, batch_size=128),
                 samples_per_epoch=len(X_train),
