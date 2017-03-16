@@ -54,16 +54,16 @@ The model.py file contains the code for training and saving the convolution neur
 
 ####1. An appropriate model architecture has been employed
 
-For this project, I implemented the model architecture laid out in NVIDIA's End to End Learning for Self-Driving Cars paper. The model consists of an input layer with cropping (model.py line 34). The cropping served to reduce the input size and helped to train the model on the primary area of interest in the camera view of the road. A lambda layer was used to scale the input data to a range of -0.5 to 0.5 to prevent uncharacteristically high pixel values from having an artificially high corresponding activation likelihood. Next, the model has several 5x5 and 3x3 convolution layers. Valid padding was used to reduce the width of the network as we increased the depth from layer to layer. Following the convolution layers, the model was flattened and passed through several dense (fully connected) layers. The last layer consists of one output corresponding to the inferred steering angle given the state input to the model. One hot encoding is not used in this case, as the output is a classification probablity estimate. For each layer, a rectified linear unit (relu) layer was used for activation in order to introduce non-linearity into the model. Finally, one dropout layer was added (model.py line 57) in order to reduce the likelihood of over-fitting.
+For this project, I implemented the model architecture laid out in NVIDIA's End to End Learning for Self-Driving Cars paper. The model consists of an input layer with cropping (model.py line 35). The cropping served to reduce the input size and helped to train the model on the primary area of interest in the camera view of the road. A lambda layer was used to scale the input data to a range of -0.5 to 0.5 to prevent uncharacteristically high pixel values from having an artificially high corresponding activation likelihood. Next, the model has several 5x5 and 3x3 convolution layers. Valid padding was used to reduce the width of the network as we increased the depth from layer to layer. In addition, one 2x2 maxpooling layer was placed following the first 5x5 convolution in order to reduce the model size while still encoding the useful information from the first layer. Following the convolution layers, the model was flattened and passed through several dense (fully connected) layers. The last layer consists of one output corresponding to the inferred steering angle given the state input to the model. One hot encoding is not used in this case, as the output is a classification probablity estimate. For each layer, a rectified linear unit (relu) layer was used for activation in order to introduce non-linearity into the model. Finally, one dropout layer was added (model.py line 57) in order to reduce the likelihood of over-fitting.
 
 ####2. Attempts to reduce overfitting in the model
 
-As stated in part 1, the model contains a dropout layer in order to reduce overfitting (model.py line 57). 
+As stated in part 1, the model contains a dropout layer in order to reduce overfitting (model.py line 59). 
 
 The data was split, 80% for training and 20% for validation, in order to minimize overfitting (model.py line 16) and the resulting model was tested on track 1 over several laps.
 ####3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 68). I experimented with the number and associated probabilities of dropout layers. I settled on using a single dropout layer with a keep probability of 0.5 (model.py line 57)
+The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 70). I experimented with the number and associated probabilities of dropout layers. I settled on using a single dropout layer with a keep probability of 0.5 (model.py line 59)
 
 ####4. Appropriate training data
 
