@@ -2,7 +2,9 @@ import csv
 import numpy as np
 from PIL import Image
 import pickle
-import cv2
+import numpy as np
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
 
 # read in  csv data
 csv_file = './data/driving_log.csv'
@@ -23,10 +25,14 @@ with open(csv_file, 'r') as f:
         img_right = np.asarray(Image.open(path + row[2].lstrip()))
 
         # add images and angles to data set
-        car_images.extend([img_center, img_left, img_right, np.fliplr(img_center), np.fliplr(img_left), np.fliplr(img_right)])
-        steering_angles.extend([steering_center, steering_left, steering_right, -steering_center, -steering_left, -steering_right])
+        car_images.extend([img_center, img_left, img_right])
+        steering_angles.extend([steering_center])
 
 data = {'features': np.array(car_images), 'labels': np.array(steering_angles)}
+n, bins, patches = plt.hist(data['labels'], 50, facecolor = 'green', alpha = 0.75)
+plt.axis([-0.50,0.50,0,6000])
+plt.show()
+print(len(data['labels']))
 
 with open("./data/data.p", "wb") as f:
     pickle.dump(data, f, protocol=4)
