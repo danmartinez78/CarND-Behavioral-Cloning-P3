@@ -15,6 +15,8 @@ with open(csv_file, 'r') as f:
     for row in reader:
         correction = 0.35  # this is a parameter to tune
         steering_center = float(row[3])
+        if abs(steering_center) < 0.001:
+            continue
         steering_left = steering_center + correction
         steering_right = steering_center - correction
 
@@ -26,11 +28,12 @@ with open(csv_file, 'r') as f:
 
         # add images and angles to data set
         car_images.extend([img_center, img_left, img_right])
-        steering_angles.extend([steering_center])
+        steering_angles.extend([steering_center, steering_left, steering_right])
 
 data = {'features': np.array(car_images), 'labels': np.array(steering_angles)}
-n, bins, patches = plt.hist(data['labels'], 50, facecolor = 'green', alpha = 0.75)
-plt.axis([-0.50,0.50,0,6000])
+n, bins, patches = plt.hist(data['labels'], 100, facecolor = 'green')
+plt.xticks(fontsize=25)
+plt.yticks(fontsize=25)
 plt.show()
 print(len(data['labels']))
 
