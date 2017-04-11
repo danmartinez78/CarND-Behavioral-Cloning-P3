@@ -8,6 +8,7 @@ from keras.callbacks import ModelCheckpoint
 import pickle
 from sklearn.model_selection import train_test_split
 from keras.utils.visualize_util import plot
+import tensorflow as tf
 
 # import data
 with open('./data/data.p', mode='rb') as f:
@@ -35,14 +36,15 @@ model = Sequential()
 model.add(Cropping2D(cropping=((50,20), (0,0)), input_shape=(160,320,3)))
 # normalize to -0.5:0.5
 model.add(Lambda(lambda x: (x / 255.0) - 0.5))
+model.add(Lambda(lambda image: tf.image.resize_images(image, (66,200))))
 # 5x5 conv
-model.add(Convolution2D(24, 5, 5, border_mode='valid'))
+model.add(Convolution2D(24, 5, 5, border_mode='valid', subsample = (2,2)))
 model.add(Activation('relu'))
 # 5x5 conv
-model.add(Convolution2D(36, 5, 5, border_mode='valid'))
+model.add(Convolution2D(36, 5, 5, border_mode='valid', subsample = (2,2)))
 model.add(Activation('relu'))
 # 5x5 conv
-model.add(Convolution2D(48, 5, 5, border_mode='valid'))
+model.add(Convolution2D(48, 5, 5, border_mode='valid', subsample = (2,2)))
 model.add(Activation('relu'))
 # 3x3 conv
 model.add(Convolution2D(64, 3, 3, border_mode='valid'))
@@ -63,12 +65,13 @@ model.add(Dropout(0.50))
 # fcn3
 model.add(Dense(10))
 model.add(Activation('relu'))
-model.add(Dropout(0.50))
 # output
 model.add(Dense(1))
 
 # compile
 model.compile('adam', 'mse')
+
+print(model.summary())
 
 plot(model, to_file='model.png', show_layer_names=True, show_shapes=True)
 
